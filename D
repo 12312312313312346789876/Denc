@@ -1,7 +1,0 @@
--- NextGen Aurora Desync Toggle (Run 2x to Toggle - WORKING Dec 2025)
-if getgenv().AuroraDesync == nil then getgenv().AuroraDesync = false end
-getgenv().AuroraDesync = not getgenv().AuroraDesync
-setfflag("NextGenReplicatorEnabledWrite4", tostring(getgenv().AuroraDesync))
-print("Aurora Desync:", getgenv().AuroraDesync and "ON" or "OFF")
--- Quick pulse alt (run once for burst):
--- setfflag("NextGenReplicatorEnabledWrite4", "True") wait(0.04) setfflag("NextGenReplicatorEnabledWrite4", "False")
