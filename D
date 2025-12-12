@@ -1,0 +1,149 @@
+-- NextGen Aurora Desync + Draggable Mobile GUI (2025 Working)
+-- Made with love for mobile users <3
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+-- Prevent duplicate GUI
+if getgenv().AuroraGuiLoaded then
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Aurora Desync";
+        Text = "GUI already loaded!";
+        Duration = 3;
+    })
+    return
+end
+getgenv().AuroraGuiLoaded = true
+
+-- Default state
+if getgenv().AuroraDesync == nil then
+    getgenv().AuroraDesync = false
+end
+
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AuroraDesyncGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game:GetService("CoreGui")
+
+-- Main Frame (Draggable)
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 180, 0, 70)
+Frame.Position = UDim2.new(0.5, -90, 0.1, 0) -- Top center by default
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BorderSizePixel = 0
+Frame.BackgroundTransparency = 0.1
+Frame.Active = true
+Frame.Draggable = true -- Works on mobile too!
+Frame.Parent = ScreenGui
+
+-- Corner rounding
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 14)
+UICorner.Parent = Frame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Aurora Desync"
+Title.TextColor3 = Color3.fromRGB(0, 255, 200)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Frame
+
+-- Status Text
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(1, -20, 0, 25)
+Status.Position = UDim2.new(0, 10, 0, 35)
+Status.BackgroundTransparency = 1
+Status.Text = getgenv().AuroraDesync and "ON" or "OFF"
+Status.TextColor3 = getgenv().AuroraDesync and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+Status.TextScaled = true
+Status.Font = Enum.Font.GothamSemibold
+Status.Parent = Frame
+
+-- Toggle Button
+local Toggle = Instance.new("TextButton")
+Toggle.Size = UDim2.new(0, 60, 0, 60)
+Toggle.Position = UDim2.new(0.5, -30, 0.5, -30)
+Toggle.BackgroundColor3 = getgenv().AuroraDesync and Color3.fromRGB(0, 220, 100) or Color3.fromRGB(40, 40, 40)
+Toggle.Text = ""
+Toggle.AutoButtonColor = false
+Toggle.Parent = Frame
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(1, 0)
+ToggleCorner.Parent = Toggle
+
+local ToggleStroke = Instance.new("UIStroke")
+ToggleStroke.Thickness = 3
+ToggleStroke.Color = Color3.fromRGB(255, 255, 255)
+ToggleStroke.Transparency = 0.7
+ToggleStroke.Parent = Toggle
+
+-- Glow effect when ON
+local Glow = Instance.new("ImageLabel")
+Glow.Size = UDim2.new(2, 0, 2, 0)
+Glow.Position = UDim2.new(0.5, -50)
+Glow.AnchorPoint = Vector2.new(0.5, 0.5)
+Glow.BackgroundTransparency = 1
+Glow.Image = "rbxassetid://4996895110"
+Glow.ImageColor3 = Color3.fromRGB(0, 255, 150)
+Glow.ImageTransparency = getgenv().AuroraDesync and 0.6 or 1
+Glow.ZIndex = -1
+Glow.Parent = Toggle
+
+-- Toggle Function
+Toggle.MouseButton1Click:Connect(function()
+    getgenv().AuroraDesync = not getgenv().AuroraDesync
+    
+    -- Apply desync
+    setfflag("NextGenReplicatorEnabledWrite4", tostring(getgenv().AuroraDesync))
+    
+    -- Update visuals
+    Status.Text = getgenv().AuroraDesync and "ON" or "OFF"
+    Status.TextColor3 = getgenv().AuroraDesync and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+    
+    TweenService:Create(Toggle, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+        BackgroundColor3 = getgenv().AuroraDesync and Color3.fromRGB(0, 220, 100) or Color3.fromRGB(40, 40, 40)
+    }):Play()
+    
+    TweenService:Create(Glow, TweenInfo.new(0.4), {
+        ImageTransparency = getgenv().AuroraDesync and 0.5 or 1,
+        Rotation = getgenv().AuroraDesync and 360 or 0
+    }):Play()
+    
+    print("Aurora Desync:", getgenv().AuroraDesync and "ON" or "OFF")
+end)
+
+-- Double-tap title to close GUI (optional)
+Title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        local connection
+        local startTime = tick()
+        connection = input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                if tick() - startTime >= 1.5 then
+                    ScreenGui:Destroy()
+                    getgenv().AuroraGuiLoaded = false
+                    print("Aurora GUI Closed")
+                end
+                connection:Disconnect()
+            end
+        end)
+    end
+end)
+
+-- Notification
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Aurora Desync";
+    Text = "GUI Loaded! Tap button to toggle";
+    Icon = "rbxassetid://6034830334";
+    Duration = 5;
+})
+
+print("DONE")
