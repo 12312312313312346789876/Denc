@@ -1,7 +1,0 @@
--- Elite Combo Desync (WorldStep + Physics + Aurora + Bandwidth)
-setfflag("WorldStepMax", "-1")
-setfflag("DFIntS2PhysicsSenderRate", "1")
-setfflag("NextGenReplicatorEnabledWrite4", "True")
-setfflag("ServerMaxBandwith", "52")  -- Reduces spam detection
-setfflag("MaxDataPacketPerSend", "2147483647")  -- High throughput
-print("Full FFlag Desync Loaded!")
